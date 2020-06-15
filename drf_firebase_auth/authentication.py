@@ -2,10 +2,11 @@
 """
 Authentication backend for handling firebase user.idToken from incoming
 Authorization header, verifying, and locally authenticating
-Author: Gary Burgmann
-Email: garyburgmann@gmail.com
-Location: Springfield QLD, Australia
-Last update: 2020-05-06
+Original Github: https://github.com/garyburgmann/drf-firebase-auth
+Author: Rahul Khairnar
+Email: rahulkhairnar@gmail.com
+Location: Silvassa, India
+Last update: 2020-06-13
 """
 import json
 import uuid
@@ -165,10 +166,12 @@ class FirebaseAuthentication(BaseFirebaseAuthentication):
         """
         Attempts to return or create a local User from Firebase user data
         """
-        email = firebase_user.email if firebase_user.email \
-            else firebase_user.provider_data[0].email
+        # username = firebase_user.email if firebase_user.email \
+        #     else firebase_user.provider_data[0].email
+        username = firebase_user.uid
+
         try:
-            user = User.objects.get(email=email)
+            user = User.objects.get(username=username)
             if not user.is_active:
                 raise exceptions.AuthenticationFailed(
                     'User account is not currently active.'
@@ -181,14 +184,10 @@ class FirebaseAuthentication(BaseFirebaseAuthentication):
                 raise exceptions.AuthenticationFailed(
                     'User is not registered to the application.'
                 )
-            username = '_'.join(
-                firebase_user.display_name.split(' ') if firebase_user.display_name \
-                else str(uuid.uuid4())
-            )
+            username = firebase_user.uid
             username = username if len(username) <= 30 else username[:30]
             new_user = User.objects.create_user(
-                username=username,
-                email=email
+                username=username
             )
             new_user.last_login = timezone.now()
             if api_settings.FIREBASE_ATTEMPT_CREATE_WITH_DISPLAY_NAME and firebase_user.display_name is not None:

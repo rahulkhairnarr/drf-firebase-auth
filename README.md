@@ -1,5 +1,8 @@
 # DRF Firebase Auth
 
+## Credit
+Inspired from https://github.com/garyburgmann/drf-firebase-auth 
+
 ## Requirements
 
 
@@ -20,7 +23,7 @@ Add the application to your project's `INSTALLED_APPS` in `settings.py`.
 ```
 INSTALLED_APPS = [
     ...
-    'drf_firebase_auth',
+    'drf_firebase_aut',
 ]
 ```
 
